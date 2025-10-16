@@ -46,6 +46,7 @@ function App() {
           <Route path="/" element={<Home />}>
             <Route index element={<Home />} />
           </Route>
+          <Route path="/icelandic-flashcards" element={<FlashcardsPage />} />
         </Routes>
       </BrowserRouter>
     </div>
