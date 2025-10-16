@@ -1057,30 +1057,24 @@
               
               <div class="lwfc-card-face lwfc-card-front">
                 <span class="lwfc-card-label">Front</span>
-                ${card.front.image ? `<img src="${card.front.image}" alt="Front image" class="lwfc-card-image">` : ''}
-                <div class="lwfc-card-text">${card.front.text}</div>
                 ${card.audioMp4 ? `
-                  <button class="lwfc-audio-player" 
-                          onclick="event.stopPropagation(); window.LWFlashcards.playAudio('${card.audioMp4}')"
-                          aria-label="Play audio">
-                    <span class="lwfc-audio-icon">🔊</span>
-                    <span>Play Audio</span>
+                  <button class="lwfc-speaker-icon ${this.isAudioPlaying && this.currentAudioCardId === card.id ? 'playing' : ''}" 
+                          onclick="event.stopPropagation(); window.LWFlashcards.playAudio('${card.audioMp4}', '${card.id}')"
+                          onkeydown="if(event.key==='Enter'){event.stopPropagation(); window.LWFlashcards.playAudio('${card.audioMp4}', '${card.id}');}"
+                          tabindex="0"
+                          data-tooltip="Play pronunciation"
+                          aria-label="Play pronunciation">
+                    🔊
                   </button>
                 ` : ''}
+                ${card.front.image ? `<img src="${card.front.image}" alt="Front image" class="lwfc-card-image">` : ''}
+                <div class="lwfc-card-text">${card.front.text}</div>
               </div>
               
               <div class="lwfc-card-face lwfc-card-back">
                 <span class="lwfc-card-label">Back</span>
                 ${card.back.image ? `<img src="${card.back.image}" alt="Back image" class="lwfc-card-image">` : ''}
                 <div class="lwfc-card-text">${card.back.text}</div>
-                ${card.audioMp4 ? `
-                  <button class="lwfc-audio-player" 
-                          onclick="event.stopPropagation(); window.LWFlashcards.playAudio('${card.audioMp4}')"
-                          aria-label="Play audio">
-                    <span class="lwfc-audio-icon">🔊</span>
-                    <span>Play Audio</span>
-                  </button>
-                ` : ''}
               </div>
             </div>
           </div>
