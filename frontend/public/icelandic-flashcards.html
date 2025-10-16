@@ -752,20 +752,57 @@
       }
 
       // ==================== AUDIO ====================
-      playAudio(src) {
+      playAudio(src, cardId) {
         if (!src) return;
         
+        // If clicking the same audio that's playing, pause it
+        if (this.audioElement && this.isAudioPlaying && this.currentAudioCardId === cardId) {
+          this.audioElement.pause();
+          this.isAudioPlaying = false;
+          this.currentAudioCardId = null;
+          this.updateSpeakerIcon();
+          return;
+        }
+        
+        // Stop any currently playing audio
         if (this.audioElement) {
           this.audioElement.pause();
         }
         
         this.audioElement = new Audio(src);
-        this.audioElement.play().catch(e => {
+        this.currentAudioCardId = cardId;
+        
+        this.audioElement.play().then(() => {
+          this.isAudioPlaying = true;
+          this.updateSpeakerIcon();
+        }).catch(e => {
           console.warn('Audio playback failed:', e);
           this.showToast('Audio playback blocked by browser');
+          this.isAudioPlaying = false;
+          this.updateSpeakerIcon();
         });
         
-        this.emitEvent('audioPlay', { src });
+        // Reset when audio ends
+        this.audioElement.addEventListener('ended', () => {
+          this.isAudioPlaying = false;
+          this.currentAudioCardId = null;
+          this.updateSpeakerIcon();
+        });
+        
+        this.emitEvent('audioPlay', { src, cardId });
+      }
+
+      updateSpeakerIcon() {
+        const speakerIcon = document.querySelector('.lwfc-speaker-icon');
+        if (speakerIcon) {
+          if (this.isAudioPlaying) {
+            speakerIcon.classList.add('playing');
+            speakerIcon.setAttribute('data-tooltip', 'Pause pronunciation');
+          } else {
+            speakerIcon.classList.remove('playing');
+            speakerIcon.setAttribute('data-tooltip', 'Play pronunciation');
+          }
+        }
       }
 
       // ==================== MCQ ====================
