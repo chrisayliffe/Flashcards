@@ -135,3 +135,5 @@ test_plan:
 agent_communication:
     - agent: "testing"
       message: "Starting comprehensive testing of Icelandic Flashcards application. Will test all modes (flashcard, MCQ, learn), navigation, keyboard controls, UI features, and responsiveness."
+    - agent: "testing"
+      message: "CRITICAL TESTING ISSUE DISCOVERED: The Icelandic Flashcards HTML file exists at /app/frontend/public/icelandic-flashcards.html and is accessible via curl/HTTP requests, but the browser automation environment cannot access it for testing. All browser requests to the HTML file URL are being redirected to the React app root. This prevents comprehensive UI testing of the flashcard functionality. The issue appears to be related to server-side routing configuration or browser environment restrictions. RECOMMENDATION: Main agent should investigate server routing configuration or provide alternative access method for testing the standalone HTML application."
