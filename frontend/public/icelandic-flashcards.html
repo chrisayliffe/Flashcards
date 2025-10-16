@@ -646,6 +646,8 @@
         this.mastered = new Set();
         this.toReview = new Set();
         this.audioElement = null;
+        this.isAudioPlaying = false;
+        this.currentAudioCardId = null;
         this.debounceTimer = null;
         
         this.loadProgress();
