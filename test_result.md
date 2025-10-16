@@ -128,7 +128,8 @@ metadata:
 test_plan:
   current_focus:
     - "Icelandic Flashcards Application Testing"
-  stuck_tasks: []
+  stuck_tasks: 
+    - "Icelandic Flashcards Application Testing"
   test_all: false
   test_priority: "high_first"
 
