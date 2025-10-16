@@ -16,7 +16,8 @@ This is a **single, standalone HTML file** with all CSS and JavaScript inline - 
    - Click or press Space/Enter to flip cards
    - Front shows the Icelandic phrase
    - Back reveals the English translation
-   - Smooth 3D flip animation
+   - Smooth 3D flip animation (0.6s duration)
+   - **Speaker icon** in top-right corner for audio playback
 
 2. **Practice Mode (MCQ)** ✍️
    - Multiple choice questions with 4 options
@@ -34,7 +35,13 @@ This is a **single, standalone HTML file** with all CSS and JavaScript inline - 
 - ✅ **Progress Tracking** - Visual progress bar and card counter
 - ✅ **Mastery System** - Tracks which cards you've mastered
 - ✅ **Hints** - Collapsible hints for each card
-- ✅ **Audio Support** - Play MP4 audio for pronunciation (when configured)
+- ✅ **Audio Support** - Speaker icon (🔊) for MP4 audio pronunciation
+  - Positioned in top-right corner of flashcards
+  - Default: Red border (#f15d4e)
+  - Playing: Green (#21b767)
+  - Click to play/pause
+  - Keyboard accessible (Tab + Enter)
+  - Tooltip: "Play pronunciation"
 - ✅ **Shuffle** - Randomize card order
 - ✅ **Skip** - Skip cards you don't know
 - ✅ **Keyboard Navigation** - Full keyboard accessibility
@@ -43,28 +50,34 @@ This is a **single, standalone HTML file** with all CSS and JavaScript inline - 
 
 ## 🎨 Design System
 
-### Color Palette
+### Color Palette (Light Theme)
 ```css
-Background: #0e0f12 (Dark canvas)
-Card Background: #15171c
-Text: #ffffff
+Background: #ffffff (White)
+Card Background: #ffffff (White)
+Text: #121212 (Dark gray/black)
 Accent (Primary): #f15d4e (Coral red)
 Success: #21b767 (Green)
-Button Background: #1b1e25
+Button Background: #f5f5f5 (Light gray)
+Button Hover: #e8e8e8 (Slightly darker gray)
+Muted Text: rgba(18, 18, 18, 0.7) (70% opacity dark)
+Border: rgba(18, 18, 18, 0.12) (12% opacity dark)
+Shadow: rgba(0, 0, 0, 0.08) (Subtle)
 ```
 
 ### Typography
 - **Font:** Outfit (300, 400, 500, 600, 700 weights)
 - **Card Text:** 28px, weight 600
 - **Buttons:** 14px, weight 500
-- **Smooth, modern appearance**
+- **Clean, modern appearance**
 
 ### UI Elements
 - **Rounded corners:** 12-16px
-- **Smooth animations:** 0.3s cubic-bezier easing
-- **Box shadows:** Subtle elevation
+- **Smooth animations:** 0.6s for flip, 0.3s for other transitions
+- **3D Perspective:** 1000px for card flip depth
+- **Box shadows:** Subtle elevation (rgba(0, 0, 0, 0.08))
 - **Hover states:** All interactive elements
-- **Focus indicators:** Accessible keyboard navigation
+- **Focus indicators:** 2px solid accent color outline
+- **Border thickness:** 2px for cards, 1px for buttons
 
 ## 🚀 How to Use
 
