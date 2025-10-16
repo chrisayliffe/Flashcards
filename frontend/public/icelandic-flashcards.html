@@ -363,6 +363,66 @@
       height: 20px;
     }
 
+    /* Speaker Icon in Card Corner */
+    .lwfc-speaker-icon {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(241, 93, 78, 0.1);
+      border: 2px solid var(--lwfc-accent);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all var(--lwfc-transition);
+      z-index: 10;
+      font-size: 20px;
+    }
+
+    .lwfc-speaker-icon:hover {
+      background: rgba(241, 93, 78, 0.2);
+      transform: scale(1.05);
+    }
+
+    .lwfc-speaker-icon:focus {
+      outline: 2px solid var(--lwfc-accent);
+      outline-offset: 2px;
+    }
+
+    .lwfc-speaker-icon.playing {
+      background: rgba(33, 183, 103, 0.15);
+      border-color: var(--lwfc-success);
+      color: var(--lwfc-success);
+    }
+
+    .lwfc-speaker-icon.playing:hover {
+      background: rgba(33, 183, 103, 0.25);
+    }
+
+    /* Tooltip for speaker */
+    .lwfc-speaker-icon::before {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: -35px;
+      right: 0;
+      background: var(--lwfc-text);
+      color: var(--lwfc-bg);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--lwfc-transition);
+    }
+
+    .lwfc-speaker-icon:hover::before {
+      opacity: 1;
+    }
+
     /* ==================== LEARN MODE ==================== */
     .lwfc-learn-actions {
       display: flex;
