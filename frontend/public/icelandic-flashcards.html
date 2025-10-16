@@ -704,6 +704,14 @@
           this.hintVisible = false;
           this.mcqAnswered = false;
           this.mcqSelectedIndex = null;
+          
+          // Stop audio when navigating
+          if (this.audioElement && this.isAudioPlaying) {
+            this.audioElement.pause();
+            this.isAudioPlaying = false;
+            this.currentAudioCardId = null;
+          }
+          
           this.saveProgress();
           this.render();
           this.emitEvent('navigate', { index, cardId: this.cards[index].id });
