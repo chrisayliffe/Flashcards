@@ -107,15 +107,18 @@ user_problem_statement: "Test the Icelandic Flashcards application - a single HT
 frontend:
   - task: "Icelandic Flashcards Application Testing"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/public/icelandic-flashcards.html"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "testing"
           comment: "Initial testing setup - comprehensive testing of flashcard modes, MCQ functionality, learn mode, navigation, keyboard controls, and UI features required"
+        - working: false
+          agent: "testing"
+          comment: "CRITICAL ISSUE: HTML file exists and is accessible via curl (https://learn-flashcards-4.preview.emergentagent.com/icelandic-flashcards.html) but browser automation tool cannot access it. Browser keeps redirecting to React app root URL. Attempted multiple approaches: direct file access, React route integration, iframe embedding, and local server setup. All attempts result in React app loading instead of flashcard HTML. This appears to be a server-side routing or browser environment configuration issue that prevents testing of the standalone HTML application."
 
 metadata:
   created_by: "testing_agent"
