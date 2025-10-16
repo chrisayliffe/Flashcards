@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Icelandic Flashcards | Language Learning</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ==================== CSS VARIABLES & RESET ==================== */
+    :root {
+      --lwfc-font-family: 'Outfit', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      --lwfc-bg: #0e0f12;
+      --lwfc-text: #ffffff;
+      --lwfc-accent: #f15d4e;
+      --lwfc-success: #21b767;
+      --lwfc-card-bg: #15171c;
+      --lwfc-card-border: rgba(255, 255, 255, 0.08);
+      --lwfc-button-bg: #1b1e25;
+      --lwfc-button-text: #ffffff;
+      --lwfc-button-hover: #232732;
+      --lwfc-muted: rgba(255, 255, 255, 0.6);
+      --lwfc-error: #ef4444;
+      --lwfc-shadow: rgba(0, 0, 0, 0.2);
+      --lwfc-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ==================== SCOPED CONTAINER ==================== */
+    #lw-flashcards {
+      font-family: var(--lwfc-font-family);
+      background: var(--lwfc-bg);
+      color: var(--lwfc-text);
+      width: 100%;
+      max-height: 680px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    #lw-flashcards::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #lw-flashcards::-webkit-scrollbar-track {
+      background: var(--lwfc-card-bg);
+    }
+
+    #lw-flashcards::-webkit-scrollbar-thumb {
+      background: var(--lwfc-button-bg);
+      border-radius: 4px;
+    }
+
+    #lw-flashcards::-webkit-scrollbar-thumb:hover {
+      background: var(--lwfc-button-hover);
+    }
+
+    /* ==================== LAYOUT ==================== */
+    .lwfc-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    /* ==================== PROGRESS BAR ==================== */
+    .lwfc-progress-wrapper {
+      margin-bottom: 24px;
+    }
+
+    .lwfc-progress-bar {
+      width: 100%;
+      height: 6px;
+      background: var(--lwfc-card-bg);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .lwfc-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--lwfc-accent), var(--lwfc-success));
+      border-radius: 3px;
+      transition: width var(--lwfc-transition);
+    }
+
+    .lwfc-progress-text {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: var(--lwfc-muted);
+    }
+
+    .lwfc-progress-count {
+      font-weight: 600;
+      color: var(--lwfc-text);
+    }
+
+    /* ==================== CONTROLS ==================== */
+    .lwfc-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+      align-items: center;
+    }
+
+    .lwfc-btn {
+      font-family: var(--lwfc-font-family);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 10px 20px;
+      border: 1px solid var(--lwfc-card-border);
+      background: var(--lwfc-button-bg);
+      color: var(--lwfc-button-text);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all var(--lwfc-transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .lwfc-btn:hover:not(:disabled) {
+      background: var(--lwfc-button-hover);
+      border-color: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+    }
+
+    .lwfc-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .lwfc-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .lwfc-btn:focus {
+      outline: 2px solid var(--lwfc-accent);
+      outline-offset: 2px;
+    }
+
+    .lwfc-btn-primary {
+      background: var(--lwfc-accent);
+      border-color: var(--lwfc-accent);
+      color: white;
+    }
+
+    .lwfc-btn-primary:hover:not(:disabled) {
+      background: #d94d3f;
+      border-color: #d94d3f;
+    }
+
+    .lwfc-btn-success {
+      background: var(--lwfc-success);
+      border-color: var(--lwfc-success);
+      color: white;
+    }
+
+    .lwfc-btn-success:hover:not(:disabled) {
+      background: #1da558;
+      border-color: #1da558;
+    }
+
+    .lwfc-btn-small {
+      padding: 6px 14px;
+      font-size: 13px;
+    }
+
+    /* ==================== CARD CONTAINER ==================== */
+    .lwfc-card-wrapper {
+      perspective: 1000px;
+      margin-bottom: 24px;
+    }
+
+    .lwfc-card {
+      position: relative;
+      width: 100%;
+      min-height: 400px;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+
+    .lwfc-card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .lwfc-card-face {
+      position: absolute;
+      width: 100%;
+      min-height: 400px;
+      background: var(--lwfc-card-bg);
+      border: 1px solid var(--lwfc-card-border);
+      border-radius: 16px;
+      padding: 32px;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 4px 20px var(--lwfc-shadow);
+    }
+
+    .lwfc-card-front {
+      transform: rotateY(0deg);
+    }
+
+    .lwfc-card-back {
+      transform: rotateY(180deg);
+    }
+
+    .lwfc-card-label {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--lwfc-muted);
+    }
+
+    .lwfc-card-text {
+      font-size: 28px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.4;
+      max-width: 100%;
+      word-wrap: break-word;
+    }
+
+    .lwfc-card-image {
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    /* ==================== MCQ MODE ==================== */
+    .lwfc-mcq-container {
+      width: 100%;
+      background: var(--lwfc-card-bg);
+      border: 1px solid var(--lwfc-card-border);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 4px 20px var(--lwfc-shadow);
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .lwfc-mcq-prompt {
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .lwfc-mcq-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .lwfc-mcq-option {
+      font-family: var(--lwfc-font-family);
+      font-size: 16px;
+      font-weight: 500;
+      padding: 16px 20px;
+      background: var(--lwfc-button-bg);
+      border: 2px solid var(--lwfc-card-border);
+      border-radius: 12px;
+      color: var(--lwfc-text);
+      cursor: pointer;
+      transition: all var(--lwfc-transition);
+      text-align: left;
+      width: 100%;
+    }
+
+    .lwfc-mcq-option:hover:not(:disabled) {
+      background: var(--lwfc-button-hover);
+      border-color: rgba(255, 255, 255, 0.16);
+      transform: translateX(4px);
+    }
+
+    .lwfc-mcq-option:disabled {
+      cursor: not-allowed;
+    }
+
+    .lwfc-mcq-option.correct {
+      background: rgba(33, 183, 103, 0.15);
+      border-color: var(--lwfc-success);
+      color: var(--lwfc-success);
+    }
+
+    .lwfc-mcq-option.incorrect {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: var(--lwfc-error);
+      color: var(--lwfc-error);
+      animation: shake 0.4s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    /* ==================== HINT ==================== */
+    .lwfc-hint-section {
+      width: 100%;
+      margin-top: 16px;
+    }
+
+    .lwfc-hint-content {
+      background: rgba(241, 93, 78, 0.1);
+      border: 1px solid rgba(241, 93, 78, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 14px;
+      color: var(--lwfc-muted);
+      margin-top: 12px;
+      line-height: 1.6;
+    }
+
+    /* ==================== AUDIO ==================== */
+    .lwfc-audio-player {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(241, 93, 78, 0.1);
+      border: 1px solid rgba(241, 93, 78, 0.3);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all var(--lwfc-transition);
+      font-size: 14px;
+      color: var(--lwfc-accent);
+    }
+
+    .lwfc-audio-player:hover {
+      background: rgba(241, 93, 78, 0.15);
+    }
+
+    .lwfc-audio-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ==================== LEARN MODE ==================== */
+    .lwfc-learn-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* ==================== NAVIGATION ==================== */
+    .lwfc-navigation {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* ==================== TOAST ==================== */
+    .lwfc-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--lwfc-card-bg);
+      border: 1px solid var(--lwfc-card-border);
+      padding: 12px 24px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px var(--lwfc-shadow);
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 1000;
+      transition: transform var(--lwfc-transition);
+    }
+
+    .lwfc-toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ==================== MODE SELECTOR ==================== */
+    .lwfc-mode-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: var(--lwfc-card-bg);
+      border: 1px solid var(--lwfc-card-border);
+      padding: 6px;
+      border-radius: 12px;
+      width: fit-content;
+    }
+
+    .lwfc-mode-btn {
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      color: var(--lwfc-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all var(--lwfc-transition);
+    }
+
+    .lwfc-mode-btn:hover {
+      color: var(--lwfc-text);
+    }
+
+    .lwfc-mode-btn.active {
+      background: var(--lwfc-accent);
+      color: white;
+    }
+
+    /* ==================== RESPONSIVE ==================== */
+    @media (max-width: 640px) {
+      .lwfc-container {
+        padding: 16px 12px;
+      }
+
+      .lwfc-card-face {
+        padding: 24px 16px;
+        min-height: 350px;
+      }
+
+      .lwfc-card-text {
+        font-size: 22px;
+      }
+
+      .lwfc-mcq-container {
+        padding: 24px 16px;
+        min-height: 350px;
+      }
+
+      .lwfc-mcq-prompt {
+        font-size: 20px;
+      }
+
+      .lwfc-controls {
+        justify-content: center;
+      }
+
+      .lwfc-btn {
+        font-size: 13px;
+        padding: 8px 16px;
+      }
+    }
+
+    /* ==================== ACCESSIBILITY ==================== */
+    .lwfc-sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="lw-flashcards">
+    <!-- Content will be rendered here by JavaScript -->
+  </div>
+
+  <script>
+    // ==================== CONFIGURATION & DATA ====================
+    const CONFIG = {
+      lessonId: "icelandic-basics-01",
+      mode: "flashcards",
+      showProgress: true,
+      allowShuffle: true,
+      allowSkip: true,
+      autoplayOnFlip: false,
+      showBacksideOnlyToggle: false,
+      maxHeight: "680px",
+      theme: {
+        fontFamily: "'Outfit', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+        bg: "#0e0f12",
+        text: "#ffffff",
+        accent: "#f15d4e",
+        success: "#21b767",
+        cardBg: "#15171c",
+        cardBorder: "rgba(255,255,255,0.08)",
+        buttonBg: "#1b1e25",
+        buttonText: "#ffffff",
+        buttonHover: "#232732",
+        muted: "rgba(255,255,255,0.6)"
+      },
+      onEvent: null
+    };
+
+    const CARDS = [
+      {
+        id: "card-001",
+        type: "flashcard",
+        front: { text: "Hvað heitir þú?", image: null },
+        back: { text: "What's your name?", image: null },
+        hint: "Common greeting question in Icelandic",
+        audioMp4: null
+      },
+      {
+        id: "card-002",
+        type: "mcq",
+        prompt: "Translate: Ég heiti Sandra",
+        options: [
+          "My name is Sandra",
+          "How are you, Sandra?",
+          "I am from Sandra",
+          "I know Sandra"
+        ],
+        correctIndex: 0,
+        hint: "'Ég heiti' literally means 'I am called'",
+        image: null,
+        audioMp4: null
+      },
+      {
+        id: "card-003",
+        type: "flashcard",
+        front: { text: "Góða nótt", image: null },
+        back: { text: "Good night", image: null },
+        hint: "Nighttime farewell",
+        audioMp4: null
+      },
+      {
+        id: "card-004",
+        type: "mcq",
+        prompt: "How do you say 'Good morning' in Icelandic?",
+        options: [
+          "Góðan daginn",
+          "Bless bless",
+          "Takk fyrir",
+          "Vertu sæll"
+        ],
+        correctIndex: 0,
+        hint: "'Daginn' means 'the day'",
+        image: null,
+        audioMp4: null
+      },
+      {
+        id: "card-005",
+        type: "flashcard",
+        front: { text: "Takk fyrir", image: null },
+        back: { text: "Thank you", image: null },
+        hint: "Essential polite phrase",
+        audioMp4: null
+      }
+    ];
+
+    // ==================== STATE MANAGEMENT ====================
+    class FlashcardApp {
+      constructor(config, cards) {
+        this.config = config;
+        this.cards = cards;
+        this.currentIndex = 0;
+        this.isFlipped = false;
+        this.shuffled = false;
+        this.hintVisible = false;
+        this.mcqAnswered = false;
+        this.mcqSelectedIndex = null;
+        this.mastered = new Set();
+        this.toReview = new Set();
+        this.audioElement = null;
+        this.debounceTimer = null;
+        
+        this.loadProgress();
+        this.render();
+        this.attachEventListeners();
+        this.emitEvent('init', { lessonId: config.lessonId });
+      }
+
+      // ==================== STORAGE ====================
+      loadProgress() {
+        const key = `lwfc_${this.config.lessonId}`;
+        const stored = localStorage.getItem(key);
+        if (stored) {
+          try {
+            const data = JSON.parse(stored);
+            this.currentIndex = data.currentIndex || 0;
+            this.mastered = new Set(data.mastered || []);
+            this.toReview = new Set(data.toReview || []);
+            this.shuffled = data.shuffled || false;
+          } catch (e) {
+            console.error('Failed to load progress:', e);
+          }
+        }
+      }
+
+      saveProgress() {
+        const key = `lwfc_${this.config.lessonId}`;
+        const data = {
+          currentIndex: this.currentIndex,
+          mastered: Array.from(this.mastered),
+          toReview: Array.from(this.toReview),
+          shuffled: this.shuffled
+        };
+        localStorage.setItem(key, JSON.stringify(data));
+      }
+
+      resetProgress() {
+        const key = `lwfc_${this.config.lessonId}`;
+        localStorage.removeItem(key);
+        this.currentIndex = 0;
+        this.mastered.clear();
+        this.toReview.clear();
+        this.shuffled = false;
+        this.showToast('Progress reset');
+        this.render();
+        this.emitEvent('reset', {});
+      }
+
+      // ==================== NAVIGATION ====================
+      goToCard(index) {
+        if (index >= 0 && index < this.cards.length) {
+          this.currentIndex = index;
+          this.isFlipped = false;
+          this.hintVisible = false;
+          this.mcqAnswered = false;
+          this.mcqSelectedIndex = null;
+          this.saveProgress();
+          this.render();
+          this.emitEvent('navigate', { index, cardId: this.cards[index].id });
+        }
+      }
+
+      next() {
+        if (this.currentIndex < this.cards.length - 1) {
+          this.goToCard(this.currentIndex + 1);
+        }
+      }
+
+      previous() {
+        if (this.currentIndex > 0) {
+          this.goToCard(this.currentIndex - 1);
+        }
+      }
+
+      skip() {
+        if (this.config.allowSkip) {
+          this.toReview.add(this.cards[this.currentIndex].id);
+          this.saveProgress();
+          this.next();
+          this.emitEvent('skip', { cardId: this.cards[this.currentIndex].id });
+        }
+      }
+
+      // ==================== CARD ACTIONS ====================
+      flipCard() {
+        const card = this.cards[this.currentIndex];
+        if (card.type === 'flashcard') {
+          this.isFlipped = !this.isFlipped;
+          
+          if (this.isFlipped && this.config.autoplayOnFlip && card.audioMp4) {
+            this.playAudio(card.audioMp4);
+          }
+          
+          this.render();
+          this.emitEvent('flip', { cardId: card.id, flipped: this.isFlipped });
+        }
+      }
+
+      toggleHint() {
+        this.hintVisible = !this.hintVisible;
+        this.render();
+      }
+
+      // ==================== AUDIO ====================
+      playAudio(src) {
+        if (!src) return;
+        
+        if (this.audioElement) {
+          this.audioElement.pause();
+        }
+        
+        this.audioElement = new Audio(src);
+        this.audioElement.play().catch(e => {
+          console.warn('Audio playback failed:', e);
+          this.showToast('Audio playback blocked by browser');
+        });
+        
+        this.emitEvent('audioPlay', { src });
+      }
+
+      // ==================== MCQ ====================
+      selectMCQOption(index) {
+        if (this.mcqAnswered) return;
+        
+        clearTimeout(this.debounceTimer);
+        this.debounceTimer = setTimeout(() => {
+          const card = this.cards[this.currentIndex];
+          this.mcqSelectedIndex = index;
+          this.mcqAnswered = true;
+          
+          const isCorrect = index === card.correctIndex;
+          
+          if (isCorrect) {
+            this.mastered.add(card.id);
+            this.showToast('Correct! 🎉');
+          } else {
+            this.toReview.add(card.id);
+            this.showToast('Not quite. Try reviewing this one.');
+          }
+          
+          this.saveProgress();
+          this.render();
+          this.emitEvent('mcqAnswer', { 
+            cardId: card.id, 
+            selected: index, 
+            correct: isCorrect 
+          });
+        }, 100);
+      }
+
+      // ==================== LEARN MODE ====================
+      markKnown() {
+        const card = this.cards[this.currentIndex];
+        this.mastered.add(card.id);
+        this.toReview.delete(card.id);
+        this.saveProgress();
+        this.showToast('Marked as mastered!');
+        this.next();
+        this.emitEvent('markKnown', { cardId: card.id });
+      }
+
+      markReview() {
+        const card = this.cards[this.currentIndex];
+        this.toReview.add(card.id);
+        this.mastered.delete(card.id);
+        this.saveProgress();
+        this.showToast('Added to review pile');
+        this.next();
+        this.emitEvent('markReview', { cardId: card.id });
+      }
+
+      // ==================== SHUFFLE ====================
+      toggleShuffle() {
+        if (!this.config.allowShuffle) return;
+        
+        this.shuffled = !this.shuffled;
+        
+        if (this.shuffled) {
+          this.cards.sort(() => Math.random() - 0.5);
+          this.showToast('Cards shuffled');
+        } else {
+          // Restore original order (would need original card order stored)
+          this.showToast('Original order restored');
+        }
+        
+        this.currentIndex = 0;
+        this.render();
+        this.emitEvent('shuffle', { shuffled: this.shuffled });
+      }
+
+      // ==================== MODE SWITCHING ====================
+      setMode(mode) {
+        if (['flashcards', 'mcq', 'learn'].includes(mode)) {
+          this.config.mode = mode;
+          this.currentIndex = 0;
+          this.isFlipped = false;
+          this.hintVisible = false;
+          this.mcqAnswered = false;
+          this.render();
+          this.emitEvent('modeChange', { mode });
+        }
+      }
+
+      // ==================== UI HELPERS ====================
+      showToast(message) {
+        const container = document.getElementById('lw-flashcards');
+        let toast = container.querySelector('.lwfc-toast');
+        
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.className = 'lwfc-toast';
+          container.appendChild(toast);
+        }
+        
+        toast.textContent = message;
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2000);
+      }
+
+      emitEvent(name, payload) {
+        if (typeof this.config.onEvent === 'function') {
+          this.config.onEvent(name, payload);
+        }
+      }
+
+      // ==================== KEYBOARD HANDLERS ====================
+      attachEventListeners() {
+        document.addEventListener('keydown', (e) => {
+          // Prevent default for our handled keys
+          const handledKeys = [' ', 'Enter', 'ArrowLeft', 'ArrowRight', '1', '2', '3', '4'];
+          if (handledKeys.includes(e.key)) {
+            e.preventDefault();
+          }
+
+          const card = this.cards[this.currentIndex];
+          
+          // Space or Enter to flip
+          if (e.key === ' ' || e.key === 'Enter') {
+            if (card.type === 'flashcard') {
+              this.flipCard();
+            }
+          }
+          
+          // Arrow navigation
+          if (e.key === 'ArrowRight') {
+            this.next();
+          }
+          if (e.key === 'ArrowLeft') {
+            this.previous();
+          }
+          
+          // MCQ number keys
+          if (card.type === 'mcq' && !this.mcqAnswered) {
+            const numKey = parseInt(e.key);
+            if (numKey >= 1 && numKey <= 4) {
+              this.selectMCQOption(numKey - 1);
+            }
+          }
+        });
+      }
+
+      // ==================== RENDER ====================
+      render() {
+        const container = document.getElementById('lw-flashcards');
+        const card = this.cards[this.currentIndex];
+        const progress = ((this.currentIndex + 1) / this.cards.length) * 100;
+        const masteredCount = this.mastered.size;
+
+        container.innerHTML = `
+          <div class="lwfc-container">
+            ${this.config.showProgress ? `
+              <div class="lwfc-progress-wrapper">
+                <div class="lwfc-progress-bar">
+                  <div class="lwfc-progress-fill" style="width: ${progress}%"></div>
+                </div>
+                <div class="lwfc-progress-text">
+                  <span>Card <span class="lwfc-progress-count">${this.currentIndex + 1}</span> of <span class="lwfc-progress-count">${this.cards.length}</span></span>
+                  <span>Mastered: <span class="lwfc-progress-count">${masteredCount}</span></span>
+                </div>
+              </div>
+            ` : ''}
+
+            <div class="lwfc-mode-selector">
+              <button class="lwfc-mode-btn ${this.config.mode === 'flashcards' ? 'active' : ''}" 
+                      onclick="window.LWFlashcards.setMode('flashcards')"
+                      aria-label="Flashcards mode">
+                Flashcards
+              </button>
+              <button class="lwfc-mode-btn ${this.config.mode === 'mcq' ? 'active' : ''}" 
+                      onclick="window.LWFlashcards.setMode('mcq')"
+                      aria-label="Multiple choice mode">
+                Practice
+              </button>
+              <button class="lwfc-mode-btn ${this.config.mode === 'learn' ? 'active' : ''}" 
+                      onclick="window.LWFlashcards.setMode('learn')"
+                      aria-label="Learn mode">
+                Learn
+              </button>
+            </div>
+
+            <div class="lwfc-controls">
+              ${this.config.allowShuffle ? `
+                <button class="lwfc-btn lwfc-btn-small ${this.shuffled ? 'lwfc-btn-primary' : ''}" 
+                        onclick="window.LWFlashcards.toggleShuffle()"
+                        aria-label="Toggle shuffle">
+                  🔀 ${this.shuffled ? 'Shuffled' : 'Shuffle'}
+                </button>
+              ` : ''}
+              
+              ${this.config.allowSkip && card.type === 'flashcard' ? `
+                <button class="lwfc-btn lwfc-btn-small" 
+                        onclick="window.LWFlashcards.skip()"
+                        aria-label="Skip this card">
+                  ⏭ Skip
+                </button>
+              ` : ''}
+              
+              <button class="lwfc-btn lwfc-btn-small" 
+                      onclick="window.LWFlashcards.resetProgress()"
+                      aria-label="Reset progress">
+                ↻ Reset
+              </button>
+            </div>
+
+            ${this.renderCard(card)}
+
+            <div class="lwfc-navigation">
+              <button class="lwfc-btn" 
+                      onclick="window.LWFlashcards.previous()"
+                      ${this.currentIndex === 0 ? 'disabled' : ''}
+                      aria-label="Previous card">
+                ← Previous
+              </button>
+              
+              <button class="lwfc-btn ${this.mcqAnswered || card.type === 'flashcard' ? 'lwfc-btn-primary' : ''}" 
+                      onclick="window.LWFlashcards.next()"
+                      ${this.currentIndex === this.cards.length - 1 ? 'disabled' : ''}
+                      aria-label="Next card">
+                Next →
+              </button>
+            </div>
+          </div>
+        `;
+
+        // Re-attach button listeners (needed after innerHTML)
+        this.attachButtonListeners();
+      }
+
+      renderCard(card) {
+        if (this.config.mode === 'mcq' || card.type === 'mcq') {
+          return this.renderMCQ(card);
+        } else if (this.config.mode === 'learn') {
+          return this.renderLearnMode(card);
+        } else {
+          return this.renderFlashcard(card);
+        }
+      }
+
+      renderFlashcard(card) {
+        return `
+          <div class="lwfc-card-wrapper">
+            <div class="lwfc-card ${this.isFlipped ? 'flipped' : ''}" 
+                 onclick="window.LWFlashcards.flipCard()"
+                 role="button"
+                 tabindex="0"
+                 aria-label="Flashcard. Press space or enter to flip">
+              
+              <div class="lwfc-card-face lwfc-card-front">
+                <span class="lwfc-card-label">Front</span>
+                ${card.front.image ? `<img src="${card.front.image}" alt="Front image" class="lwfc-card-image">` : ''}
+                <div class="lwfc-card-text">${card.front.text}</div>
+                ${card.audioMp4 ? `
+                  <button class="lwfc-audio-player" 
+                          onclick="event.stopPropagation(); window.LWFlashcards.playAudio('${card.audioMp4}')"
+                          aria-label="Play audio">
+                    <span class="lwfc-audio-icon">🔊</span>
+                    <span>Play Audio</span>
+                  </button>
+                ` : ''}
+              </div>
+              
+              <div class="lwfc-card-face lwfc-card-back">
+                <span class="lwfc-card-label">Back</span>
+                ${card.back.image ? `<img src="${card.back.image}" alt="Back image" class="lwfc-card-image">` : ''}
+                <div class="lwfc-card-text">${card.back.text}</div>
+                ${card.audioMp4 ? `
+                  <button class="lwfc-audio-player" 
+                          onclick="event.stopPropagation(); window.LWFlashcards.playAudio('${card.audioMp4}')"
+                          aria-label="Play audio">
+                    <span class="lwfc-audio-icon">🔊</span>
+                    <span>Play Audio</span>
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+
+          ${card.hint ? `
+            <div class="lwfc-hint-section">
+              <button class="lwfc-btn lwfc-btn-small" 
+                      onclick="window.LWFlashcards.toggleHint()"
+                      aria-label="${this.hintVisible ? 'Hide hint' : 'Show hint'}">
+                💡 ${this.hintVisible ? 'Hide Hint' : 'Show Hint'}
+              </button>
+              ${this.hintVisible ? `<div class="lwfc-hint-content">${card.hint}</div>` : ''}
+            </div>
+          ` : ''}
+        `;
+      }
+
+      renderMCQ(card) {
+        if (card.type !== 'mcq') {
+          return '<div class="lwfc-mcq-container"><p>This card is not a multiple choice question.</p></div>';
+        }
+
+        return `
+          <div class="lwfc-mcq-container">
+            <div class="lwfc-mcq-prompt">${card.prompt}</div>
+            
+            ${card.image ? `<img src="${card.image}" alt="Question image" class="lwfc-card-image">` : ''}
+            
+            ${card.audioMp4 ? `
+              <button class="lwfc-audio-player" 
+                      onclick="window.LWFlashcards.playAudio('${card.audioMp4}')"
+                      aria-label="Play audio">
+                <span class="lwfc-audio-icon">🔊</span>
+                <span>Play Audio</span>
+              </button>
+            ` : ''}
+
+            <div class="lwfc-mcq-options">
+              ${card.options.map((option, index) => {
+                let className = 'lwfc-mcq-option';
+                if (this.mcqAnswered) {
+                  if (index === card.correctIndex) {
+                    className += ' correct';
+                  } else if (index === this.mcqSelectedIndex) {
+                    className += ' incorrect';
+                  }
+                }
+                
+                return `
+                  <button class="${className}"
+                          onclick="window.LWFlashcards.selectMCQOption(${index})"
+                          ${this.mcqAnswered ? 'disabled' : ''}
+                          aria-label="Option ${index + 1}: ${option}">
+                    ${index + 1}. ${option}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            ${card.hint ? `
+              <div class="lwfc-hint-section">
+                <button class="lwfc-btn lwfc-btn-small" 
+                        onclick="window.LWFlashcards.toggleHint()"
+                        aria-label="${this.hintVisible ? 'Hide hint' : 'Show hint'}">
+                  💡 ${this.hintVisible ? 'Hide Hint' : 'Show Hint'}
+                </button>
+                ${this.hintVisible ? `<div class="lwfc-hint-content">${card.hint}</div>` : ''}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      renderLearnMode(card) {
+        return `
+          <div class="lwfc-card-wrapper">
+            <div class="lwfc-card flipped">
+              <div class="lwfc-card-face lwfc-card-back">
+                <span class="lwfc-card-label">Learn Mode</span>
+                
+                ${card.front ? `
+                  <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--lwfc-card-border);">
+                    ${card.front.image ? `<img src="${card.front.image}" alt="Front image" class="lwfc-card-image">` : ''}
+                    <div class="lwfc-card-text" style="font-size: 20px; color: var(--lwfc-muted);">${card.front.text}</div>
+                  </div>
+                ` : ''}
+                
+                ${card.back ? `
+                  ${card.back.image ? `<img src="${card.back.image}" alt="Back image" class="lwfc-card-image">` : ''}
+                  <div class="lwfc-card-text">${card.back.text}</div>
+                ` : card.prompt ? `
+                  <div class="lwfc-card-text">${card.prompt}</div>
+                ` : ''}
+
+                ${card.audioMp4 ? `
+                  <button class="lwfc-audio-player" 
+                          onclick="window.LWFlashcards.playAudio('${card.audioMp4}')"
+                          aria-label="Play audio">
+                    <span class="lwfc-audio-icon">🔊</span>
+                    <span>Play Audio</span>
+                  </button>
+                ` : ''}
+
+                <div class="lwfc-learn-actions">
+                  <button class="lwfc-btn lwfc-btn-success" 
+                          onclick="window.LWFlashcards.markKnown()"
+                          aria-label="I knew this">
+                    ✓ I Knew It
+                  </button>
+                  <button class="lwfc-btn" 
+                          onclick="window.LWFlashcards.markReview()"
+                          aria-label="Review again">
+                    ↻ Review Again
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          ${card.hint ? `
+            <div class="lwfc-hint-section">
+              <button class="lwfc-btn lwfc-btn-small" 
+                      onclick="window.LWFlashcards.toggleHint()"
+                      aria-label="${this.hintVisible ? 'Hide hint' : 'Show hint'}">
+                💡 ${this.hintVisible ? 'Hide Hint' : 'Show Hint'}
+              </button>
+              ${this.hintVisible ? `<div class="lwfc-hint-content">${card.hint}</div>` : ''}
+            </div>
+          ` : ''}
+        `;
+      }
+
+      attachButtonListeners() {
+        // Event delegation is handled via onclick in HTML
+        // But we need to handle card click for flip
+        const cardElement = document.querySelector('.lwfc-card');
+        if (cardElement && this.cards[this.currentIndex].type === 'flashcard') {
+          cardElement.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'Enter') {
+              e.preventDefault();
+              this.flipCard();
+            }
+          });
+        }
+      }
+    }
+
+    // ==================== PUBLIC API ====================
+    window.LWFlashcards = {
+      instance: null,
+      
+      init(configOverride, cardsOverride) {
+        const finalConfig = { ...CONFIG, ...(configOverride || {}) };
+        const finalCards = cardsOverride || CARDS;
+        
+        this.instance = new FlashcardApp(finalConfig, finalCards);
+        return this.instance;
+      },
+      
+      setMode(mode) {
+        if (this.instance) {
+          this.instance.setMode(mode);
+        }
+      },
+      
+      goTo(index) {
+        if (this.instance) {
+          this.instance.goToCard(index);
+        }
+      },
+      
+      shuffle(isOn) {
+        if (this.instance) {
+          if (isOn !== this.instance.shuffled) {
+            this.instance.toggleShuffle();
+          }
+        }
+      },
+      
+      resetProgress() {
+        if (this.instance) {
+          this.instance.resetProgress();
+        }
+      },
+      
+      flipCard() {
+        if (this.instance) {
+          this.instance.flipCard();
+        }
+      },
+      
+      next() {
+        if (this.instance) {
+          this.instance.next();
+        }
+      },
+      
+      previous() {
+        if (this.instance) {
+          this.instance.previous();
+        }
+      },
+      
+      skip() {
+        if (this.instance) {
+          this.instance.skip();
+        }
+      },
+      
+      toggleHint() {
+        if (this.instance) {
+          this.instance.toggleHint();
+        }
+      },
+      
+      playAudio(src) {
+        if (this.instance) {
+          this.instance.playAudio(src);
+        }
+      },
+      
+      selectMCQOption(index) {
+        if (this.instance) {
+          this.instance.selectMCQOption(index);
+        }
+      },
+      
+      markKnown() {
+        if (this.instance) {
+          this.instance.markKnown();
+        }
+      },
+      
+      markReview() {
+        if (this.instance) {
+          this.instance.markReview();
+        }
+      },
+      
+      toggleShuffle() {
+        if (this.instance) {
+          this.instance.toggleShuffle();
+        }
+      }
+    };
+
+    // ==================== AUTO-INIT ====================
+    window.addEventListener('DOMContentLoaded', () => {
+      window.LWFlashcards.init();
+    });
+  </script>
+
+  <!-- 
+  ==================== LEARNWORLDS EMBED EXAMPLE ====================
+  
+  To embed this in LearnWorlds, use:
+  
+  <iframe 
+    src="https://your-domain.com/icelandic-flashcards.html"
+    width="100%"
+    height="680"
+    style="border:none;border-radius:12px;overflow:hidden"
+    allow="autoplay"
+  ></iframe>
+  
+  Or use the HTML embed block and paste this entire file.
+  
+  ==================== API USAGE EXAMPLE ====================
+  
+  // Override config and cards
+  window.LWFlashcards.init({
+    lessonId: 'custom-lesson-01',
+    mode: 'mcq',
+    autoplayOnFlip: true
+  }, [
+    {
+      id: 'custom-001',
+      type: 'flashcard',
+      front: { text: 'Hallo', image: null },
+      back: { text: 'Hello', image: null },
+      hint: 'Basic greeting',
+      audioMp4: null
+    }
+  ]);
+  
+  // Programmatic control
+  window.LWFlashcards.setMode('learn');
+  window.LWFlashcards.goTo(2);
+  window.LWFlashcards.shuffle(true);
+  
+  -->
+</body>
+</html>
