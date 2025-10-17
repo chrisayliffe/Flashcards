@@ -1849,8 +1849,12 @@
     };
 
     // ==================== AUTO-INIT ====================
-    window.addEventListener('DOMContentLoaded', () => {
-      window.LWFlashcards.init();
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Check for lesson parameter in URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const lessonParam = urlParams.get('lesson');
+      
+      await window.LWFlashcards.init(null, null, lessonParam);
     });
   </script>
 
