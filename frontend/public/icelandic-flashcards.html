@@ -698,12 +698,13 @@
       {
         id: "card-002",
         type: "mcq",
-        prompt: "Translate: Ég heiti Sandra",
+        questionType: "multiple-choice",
+        prompt: "Translate to Icelandic: My name is Sandra",
         options: [
-          "My name is Sandra",
-          "How are you, Sandra?",
-          "I am from Sandra",
-          "I know Sandra"
+          "Ég heiti Sandra",
+          "Þú heitir Sandra",
+          "Hann heitir Sandra",
+          "Við heitum Sandra"
         ],
         correctIndex: 0,
         hint: "'Ég heiti' literally means 'I am called'",
@@ -721,15 +722,11 @@
       {
         id: "card-004",
         type: "mcq",
-        prompt: "How do you say 'Good morning' in Icelandic?",
-        options: [
-          "Góðan daginn",
-          "Bless bless",
-          "Takk fyrir",
-          "Vertu sæll"
-        ],
-        correctIndex: 0,
-        hint: "'Daginn' means 'the day'",
+        questionType: "fill-in-blank",
+        prompt: "Fill in the blank: Góðan _____",
+        answer: "daginn",
+        acceptableAnswers: ["daginn", "Daginn"],
+        hint: "This means 'Good morning' - think about the word for 'day'",
         image: null,
         audioMp4: null
       },
@@ -739,6 +736,21 @@
         front: { text: "Takk fyrir", image: null },
         back: { text: "Thank you", image: null },
         hint: "Essential polite phrase",
+        audioMp4: null
+      },
+      {
+        id: "card-006",
+        type: "mcq",
+        questionType: "image-selection",
+        prompt: "Select the image that represents: Góða nótt",
+        options: [
+          { image: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=400", label: "Moon and stars" },
+          { image: "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=400", label: "Sunrise" },
+          { image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400", label: "Mountain" },
+          { image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400", label: "Forest" }
+        ],
+        correctIndex: 0,
+        hint: "'Góða nótt' means 'Good night'",
         audioMp4: null
       }
     ];
