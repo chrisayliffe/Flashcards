@@ -351,6 +351,88 @@
       75% { transform: translateX(10px); }
     }
 
+    /* ==================== FILL IN THE BLANK ==================== */
+    .lwfc-fill-blank-input {
+      font-family: var(--lwfc-font-family);
+      font-size: 18px;
+      font-weight: 500;
+      padding: 12px 20px;
+      background: var(--lwfc-button-bg);
+      border: 2px solid var(--lwfc-card-border);
+      border-radius: 12px;
+      color: var(--lwfc-text);
+      width: 100%;
+      max-width: 400px;
+      transition: all var(--lwfc-transition);
+      margin: 16px 0;
+    }
+
+    .lwfc-fill-blank-input:focus {
+      outline: none;
+      border-color: var(--lwfc-accent);
+      background: #ffffff;
+    }
+
+    .lwfc-fill-blank-input.correct {
+      border-color: var(--lwfc-success);
+      background: rgba(33, 183, 103, 0.1);
+      color: var(--lwfc-success);
+    }
+
+    .lwfc-fill-blank-input.incorrect {
+      border-color: var(--lwfc-error);
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--lwfc-error);
+      animation: shake 0.4s;
+    }
+
+    /* ==================== IMAGE SELECTION ==================== */
+    .lwfc-image-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .lwfc-image-option {
+      position: relative;
+      cursor: pointer;
+      border: 3px solid var(--lwfc-card-border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all var(--lwfc-transition);
+      background: var(--lwfc-button-bg);
+      padding: 8px;
+    }
+
+    .lwfc-image-option:hover:not(.disabled) {
+      border-color: #f15d4e;
+      transform: scale(1.02);
+    }
+
+    .lwfc-image-option img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .lwfc-image-option.correct {
+      border-color: var(--lwfc-success);
+      background: rgba(33, 183, 103, 0.1);
+    }
+
+    .lwfc-image-option.incorrect {
+      border-color: var(--lwfc-error);
+      background: rgba(239, 68, 68, 0.1);
+      animation: shake 0.4s;
+    }
+
+    .lwfc-image-option.disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
     /* ==================== HINT ==================== */
     .lwfc-hint-section {
       width: 100%;
