@@ -1050,7 +1050,8 @@
           this.cards.sort(() => Math.random() - 0.5);
           this.showToast('Cards shuffled');
         } else {
-          // Restore original order (would need original card order stored)
+          // Restore filtered cards in original order
+          this.cards = this.filterCardsByMode(this.allCards, this.config.mode);
           this.showToast('Original order restored');
         }
         
