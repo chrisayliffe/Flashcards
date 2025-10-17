@@ -899,7 +899,10 @@
 
       // ==================== AUDIO ====================
       playAudio(src, cardId) {
-        if (!src) return;
+        if (!src) {
+          this.showToast('No audio file configured for this card');
+          return;
+        }
         
         // If clicking the same audio that's playing, pause it
         if (this.audioElement && this.isAudioPlaying && this.currentAudioCardId === cardId) {
