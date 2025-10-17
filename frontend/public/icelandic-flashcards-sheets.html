@@ -952,7 +952,7 @@
 
     // ==================== STATE MANAGEMENT ====================
     class FlashcardApp {
-      constructor(config, cards) {
+      constructor(config, cards, sheetName = null) {
         this.config = config;
         this.allCards = cards; // Store all cards
         this.cards = this.filterCardsByMode(cards, config.mode); // Filter cards based on mode
@@ -968,6 +968,8 @@
         this.isAudioPlaying = false;
         this.currentAudioCardId = null;
         this.debounceTimer = null;
+        this.currentSheet = sheetName || GOOGLE_SHEETS_CONFIG.defaultSheet;
+        this.isLoadingSheet = false;
         
         this.loadProgress();
         this.render();
