@@ -1702,12 +1702,57 @@
     window.LWFlashcards = {
       instance: null,
       
-      init(configOverride, cardsOverride) {
+      async init(configOverride, cardsOverride, sheetName) {
         const finalConfig = { ...CONFIG, ...(configOverride || {}) };
-        const finalCards = cardsOverride || CARDS;
+        let finalCards = cardsOverride || CARDS;
+        const targetSheet = sheetName || GOOGLE_SHEETS_CONFIG.defaultSheet;
         
-        this.instance = new FlashcardApp(finalConfig, finalCards);
+        // Try to load from Google Sheets if enabled
+        if (GOOGLE_SHEETS_CONFIG.enabled && !cardsOverride) {
+          try {
+            const sheetCards = await fetchGoogleSheetData(targetSheet);
+            if (sheetCards && sheetCards.length > 0) {
+              finalCards = sheetCards;
+              console.log(`✅ Loaded ${sheetCards.length} cards from Google Sheets: ${targetSheet}`);
+            } else {
+              console.warn('⚠️ No cards loaded from Google Sheets, using fallback data');
+            }
+          } catch (error) {
+            console.error('❌ Error loading from Google Sheets, using fallback data:', error);
+          }
+        }
+        
+        this.instance = new FlashcardApp(finalConfig, finalCards, targetSheet);
         return this.instance;
+      },
+
+      async loadSheet(sheetName) {
+        if (!this.instance) return;
+        
+        this.instance.isLoadingSheet = true;
+        this.instance.render();
+        
+        try {
+          const sheetCards = await fetchGoogleSheetData(sheetName);
+          if (sheetCards && sheetCards.length > 0) {
+            this.instance.allCards = sheetCards;
+            this.instance.cards = this.instance.filterCardsByMode(sheetCards, this.instance.config.mode);
+            this.instance.currentSheet = sheetName;
+            this.instance.currentIndex = 0;
+            this.instance.isFlipped = false;
+            this.instance.hintVisible = false;
+            this.instance.mcqAnswered = false;
+            this.instance.showToast(`Loaded lesson: ${sheetName}`);
+          } else {
+            this.instance.showToast('Failed to load lesson');
+          }
+        } catch (error) {
+          console.error('Error loading sheet:', error);
+          this.instance.showToast('Error loading lesson');
+        } finally {
+          this.instance.isLoadingSheet = false;
+          this.instance.render();
+        }
       },
       
       setMode(mode) {
