@@ -765,6 +765,191 @@
       }
     ];
 
+    // ==================== GOOGLE SHEETS INTEGRATION ====================
+    
+    // Cache for Google Sheets data
+    let sheetsCache = {
+      data: null,
+      timestamp: 0,
+      lessonList: []
+    };
+
+    /**
+     * Fetch data from Google Sheets
+     */
+    async function fetchGoogleSheetData(sheetName) {
+      // Check cache
+      const now = Date.now();
+      if (sheetsCache.data && sheetsCache.data[sheetName] && 
+          (now - sheetsCache.timestamp) < GOOGLE_SHEETS_CONFIG.cacheTimeout) {
+        console.log('Using cached data for:', sheetName);
+        return sheetsCache.data[sheetName];
+      }
+
+      const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+      
+      try {
+        const response = await fetch(url);
+        const text = await response.text();
+        
+        // Parse Google Sheets JSON response (it's wrapped in a function call)
+        const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\)/);
+        if (!jsonMatch) throw new Error('Invalid response format');
+        
+        const data = JSON.parse(jsonMatch[1]);
+        const rows = data.table.rows;
+        
+        // Skip header row (first row)
+        const cards = [];
+        for (let i = 1; i < rows.length; i++) {
+          const row = rows[i].c;
+          if (!row || !row[0] || !row[0].v) continue; // Skip empty rows
+          
+          const type = (row[0].v || '').toLowerCase().trim();
+          
+          if (type === 'flashcard') {
+            cards.push(parseFlashcardRow(row, i));
+          } else if (type === 'mcq') {
+            cards.push(parseMCQRow(row, i));
+          } else if (type === 'fill-blank') {
+            cards.push(parseFillBlankRow(row, i));
+          } else if (type === 'image') {
+            cards.push(parseImageRow(row, i));
+          }
+        }
+        
+        // Update cache
+        if (!sheetsCache.data) sheetsCache.data = {};
+        sheetsCache.data[sheetName] = cards;
+        sheetsCache.timestamp = now;
+        
+        console.log(`Loaded ${cards.length} cards from sheet: ${sheetName}`);
+        return cards;
+        
+      } catch (error) {
+        console.error('Error fetching Google Sheet:', error);
+        return null;
+      }
+    }
+
+    /**
+     * Get list of all sheets (tabs) in the spreadsheet
+     */
+    async function fetchSheetList() {
+      if (sheetsCache.lessonList.length > 0) {
+        return sheetsCache.lessonList;
+      }
+
+      const url = `https://docs.google.com/spreadsheets/d/${GOOGLE_SHEETS_CONFIG.spreadsheetId}/gviz/tq?tqx=out:json`;
+      
+      try {
+        const response = await fetch(url);
+        const text = await response.text();
+        const jsonMatch = text.match(/google\.visualization\.Query\.setResponse\(([\s\S\w]+)\)/);
+        if (!jsonMatch) return [GOOGLE_SHEETS_CONFIG.defaultSheet];
+        
+        const data = JSON.parse(jsonMatch[1]);
+        // Google Sheets API doesn't directly give us sheet names via this endpoint
+        // So we'll use the default sheet for now, but users can add more
+        sheetsCache.lessonList = [GOOGLE_SHEETS_CONFIG.defaultSheet];
+        return sheetsCache.lessonList;
+        
+      } catch (error) {
+        console.error('Error fetching sheet list:', error);
+        return [GOOGLE_SHEETS_CONFIG.defaultSheet];
+      }
+    }
+
+    /**
+     * Parse flashcard row from Google Sheets
+     * Columns: Type | Icelandic | English | Hint | Audio URL
+     */
+    function parseFlashcardRow(row, index) {
+      return {
+        id: `sheet-card-${index}`,
+        type: 'flashcard',
+        front: { 
+          text: row[1]?.v || '', 
+          image: null 
+        },
+        back: { 
+          text: row[2]?.v || '', 
+          image: null 
+        },
+        hint: row[3]?.v || null,
+        audioMp4: row[4]?.v || null
+      };
+    }
+
+    /**
+     * Parse multiple choice row from Google Sheets
+     * Columns: Type | Question | Option1 | Option2 | Option3 | Option4 | Answer (1-4) | Hint
+     */
+    function parseMCQRow(row, index) {
+      const correctAnswer = parseInt(row[6]?.v || '1') - 1; // Convert 1-4 to 0-3
+      
+      return {
+        id: `sheet-card-${index}`,
+        type: 'mcq',
+        questionType: 'multiple-choice',
+        prompt: row[1]?.v || '',
+        options: [
+          row[2]?.v || '',
+          row[3]?.v || '',
+          row[4]?.v || '',
+          row[5]?.v || ''
+        ],
+        correctIndex: correctAnswer,
+        hint: row[7]?.v || null,
+        image: null,
+        audioMp4: null
+      };
+    }
+
+    /**
+     * Parse fill-in-blank row from Google Sheets
+     * Columns: Type | Question | Answer | Hint
+     */
+    function parseFillBlankRow(row, index) {
+      const answer = row[2]?.v || '';
+      
+      return {
+        id: `sheet-card-${index}`,
+        type: 'mcq',
+        questionType: 'fill-in-blank',
+        prompt: row[1]?.v || '',
+        answer: answer,
+        acceptableAnswers: [answer, answer.toLowerCase(), answer.toUpperCase()],
+        hint: row[3]?.v || null,
+        image: null,
+        audioMp4: null
+      };
+    }
+
+    /**
+     * Parse image selection row from Google Sheets
+     * Columns: Type | Question | Image1 | Image2 | Image3 | Image4 | Answer (1-4) | Hint
+     */
+    function parseImageRow(row, index) {
+      const correctAnswer = parseInt(row[6]?.v || '1') - 1; // Convert 1-4 to 0-3
+      
+      return {
+        id: `sheet-card-${index}`,
+        type: 'mcq',
+        questionType: 'image-selection',
+        prompt: row[1]?.v || '',
+        options: [
+          { image: row[2]?.v || '', label: 'Option 1' },
+          { image: row[3]?.v || '', label: 'Option 2' },
+          { image: row[4]?.v || '', label: 'Option 3' },
+          { image: row[5]?.v || '', label: 'Option 4' }
+        ],
+        correctIndex: correctAnswer,
+        hint: row[7]?.v || null,
+        audioMp4: null
+      };
+    }
+
     // ==================== STATE MANAGEMENT ====================
     class FlashcardApp {
       constructor(config, cards) {
