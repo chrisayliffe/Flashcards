@@ -1220,58 +1220,151 @@
 
       renderMCQ(card) {
         if (card.type !== 'mcq') {
-          return '<div class="lwfc-mcq-container"><p>This card is not a multiple choice question.</p></div>';
+          return this.renderFlashcard(card);
         }
 
-        return `
-          <div class="lwfc-mcq-container">
-            <div class="lwfc-mcq-prompt">${card.prompt}</div>
-            
-            ${card.image ? `<img src="${card.image}" alt="Question image" class="lwfc-card-image">` : ''}
-            
-            ${card.audioMp4 ? `
-              <button class="lwfc-audio-player" 
-                      onclick="window.LWFlashcards.playAudio('${card.audioMp4}', '${card.id}')"
-                      aria-label="Play audio">
-                <span class="lwfc-audio-icon">🔊</span>
-                <span>Play Audio</span>
-              </button>
-            ` : ''}
+        const questionType = card.questionType || 'multiple-choice';
 
-            <div class="lwfc-mcq-options">
-              ${card.options.map((option, index) => {
-                let className = 'lwfc-mcq-option';
-                if (this.mcqAnswered) {
-                  if (index === card.correctIndex) {
-                    className += ' correct';
-                  } else if (index === this.mcqSelectedIndex) {
-                    className += ' incorrect';
-                  }
-                }
-                
-                return `
-                  <button class="${className}"
-                          onclick="window.LWFlashcards.selectMCQOption(${index})"
-                          ${this.mcqAnswered ? 'disabled' : ''}
-                          aria-label="Option ${index + 1}: ${option}">
-                    ${index + 1}. ${option}
-                  </button>
-                `;
-              }).join('')}
-            </div>
-
-            ${card.hint ? `
-              <div class="lwfc-hint-section">
-                <button class="lwfc-btn lwfc-btn-small" 
-                        onclick="window.LWFlashcards.toggleHint()"
-                        aria-label="${this.hintVisible ? 'Hide hint' : 'Show hint'}">
-                  💡 ${this.hintVisible ? 'Hide Hint' : 'Show Hint'}
+        // Multiple Choice Questions
+        if (questionType === 'multiple-choice') {
+          return `
+            <div class="lwfc-mcq-container">
+              <div class="lwfc-mcq-prompt">${card.prompt}</div>
+              
+              ${card.image ? `<img src="${card.image}" alt="Question image" class="lwfc-card-image">` : ''}
+              
+              ${card.audioMp4 ? `
+                <button class="lwfc-audio-player" 
+                        onclick="window.LWFlashcards.playAudio('${card.audioMp4}', '${card.id}')"
+                        aria-label="Play audio">
+                  <span class="lwfc-audio-icon">🔊</span>
+                  <span>Play Audio</span>
                 </button>
-                ${this.hintVisible ? `<div class="lwfc-hint-content">${card.hint}</div>` : ''}
+              ` : ''}
+
+              <div class="lwfc-mcq-options">
+                ${card.options.map((option, index) => {
+                  let className = 'lwfc-mcq-option';
+                  if (this.mcqAnswered) {
+                    if (index === card.correctIndex) {
+                      className += ' correct';
+                    } else if (index === this.mcqSelectedIndex) {
+                      className += ' incorrect';
+                    }
+                  }
+                  
+                  return `
+                    <button class="${className}"
+                            onclick="window.LWFlashcards.selectMCQOption(${index})"
+                            ${this.mcqAnswered ? 'disabled' : ''}
+                            aria-label="Option ${index + 1}: ${option}">
+                      ${index + 1}. ${option}
+                    </button>
+                  `;
+                }).join('')}
               </div>
-            ` : ''}
-          </div>
-        `;
+
+              ${card.hint ? `
+                <div class="lwfc-hint-section">
+                  <button class="lwfc-btn lwfc-btn-small" 
+                          onclick="window.LWFlashcards.toggleHint()"
+                          aria-label="${this.hintVisible ? 'Hide hint' : 'Show hint'}">
+                    💡 ${this.hintVisible ? 'Hide Hint' : 'Show Hint'}
+                  </button>
+                  ${this.hintVisible ? `<div class="lwfc-hint-content">${card.hint}</div>` : ''}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
+
+        // Fill in the Blank
+        if (questionType === 'fill-in-blank') {
+          return `
+            <div class="lwfc-mcq-container">
+              <div class="lwfc-mcq-prompt">${card.prompt}</div>
+              
+              <input type="text" 
+                     class="lwfc-fill-blank-input ${this.mcqAnswered ? (this.mcqSelectedIndex === true ? 'correct' : 'incorrect') : ''}"
+                     id="fill-blank-input"
+                     placeholder="Type your answer..."
+                     ${this.mcqAnswered ? 'disabled' : ''}
+                     onkeypress="if(event.key==='Enter'){window.LWFlashcards.checkFillBlank()}"
+                     aria-label="Fill in the blank input">
+
+              ${!this.mcqAnswered ? `
+                <button class="lwfc-btn lwfc-btn-primary" 
+                        onclick="window.LWFlashcards.checkFillBlank()"
+                        style="margin-top: 16px;">
+                  Check Answer
+                </button>
+              ` : ''}
+
+              ${this.mcqAnswered && this.mcqSelectedIndex !== true ? `
+                <div style="margin-top: 16px; color: var(--lwfc-success); font-size: 14px;">
+                  Correct answer: <strong>${card.answer}</strong>
+                </div>
+              ` : ''}
+
+              ${card.hint ? `
+                <div class="lwfc-hint-section">
+                  <button class="lwfc-btn lwfc-btn-small" 
+                          onclick="window.LWFlashcards.toggleHint()"
+                          aria-label="${this.hintVisible ? 'Hide hint' : 'Show hint'}">
+                    💡 ${this.hintVisible ? 'Hide Hint' : 'Show Hint'}
+                  </button>
+                  ${this.hintVisible ? `<div class="lwfc-hint-content">${card.hint}</div>` : ''}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
+
+        // Image Selection
+        if (questionType === 'image-selection') {
+          return `
+            <div class="lwfc-mcq-container">
+              <div class="lwfc-mcq-prompt">${card.prompt}</div>
+              
+              <div class="lwfc-image-options">
+                ${card.options.map((option, index) => {
+                  let className = 'lwfc-image-option';
+                  if (this.mcqAnswered) {
+                    className += ' disabled';
+                    if (index === card.correctIndex) {
+                      className += ' correct';
+                    } else if (index === this.mcqSelectedIndex) {
+                      className += ' incorrect';
+                    }
+                  }
+                  
+                  return `
+                    <div class="${className}"
+                         onclick="window.LWFlashcards.selectMCQOption(${index})"
+                         role="button"
+                         tabindex="0"
+                         aria-label="Option ${index + 1}: ${option.label}">
+                      <img src="${option.image}" alt="${option.label}">
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+
+              ${card.hint ? `
+                <div class="lwfc-hint-section">
+                  <button class="lwfc-btn lwfc-btn-small" 
+                          onclick="window.LWFlashcards.toggleHint()"
+                          aria-label="${this.hintVisible ? 'Hide hint' : 'Show hint'}">
+                    💡 ${this.hintVisible ? 'Hide Hint' : 'Show Hint'}
+                  </button>
+                  ${this.hintVisible ? `<div class="lwfc-hint-content">${card.hint}</div>` : ''}
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
+
+        return '<div class="lwfc-mcq-container"><p>Unknown question type.</p></div>';
       }
 
       renderLearnMode(card) {
