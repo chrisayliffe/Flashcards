@@ -759,7 +759,8 @@
     class FlashcardApp {
       constructor(config, cards) {
         this.config = config;
-        this.cards = cards;
+        this.allCards = cards; // Store all cards
+        this.cards = this.filterCardsByMode(cards, config.mode); // Filter cards based on mode
         this.currentIndex = 0;
         this.isFlipped = false;
         this.shuffled = false;
@@ -777,6 +778,18 @@
         this.render();
         this.attachEventListeners();
         this.emitEvent('init', { lessonId: config.lessonId });
+      }
+
+      // ==================== CARD FILTERING ====================
+      filterCardsByMode(cards, mode) {
+        if (mode === 'flashcards') {
+          // Only show flashcard type cards
+          return cards.filter(card => card.type === 'flashcard');
+        } else if (mode === 'mcq') {
+          // Only show MCQ type cards (multiple-choice, fill-in-blank, image-selection)
+          return cards.filter(card => card.type === 'mcq');
+        }
+        return cards;
       }
 
       // ==================== STORAGE ====================
