@@ -1369,6 +1369,13 @@
               </button>
             </div>
 
+            ${GOOGLE_SHEETS_CONFIG.enabled ? `
+              <div class="lwfc-lesson-info" style="text-align: center; margin-bottom: 16px; font-size: 14px; color: var(--lwfc-muted);">
+                📚 Lesson: <strong>${this.currentSheet}</strong>
+                ${this.isLoadingSheet ? ' <em>(Loading...)</em>' : ''}
+              </div>
+            ` : ''}
+
             <div class="lwfc-controls">
               ${this.config.allowShuffle ? `
                 <button class="lwfc-btn lwfc-btn-small ${this.shuffled ? 'lwfc-btn-primary' : ''}" 
