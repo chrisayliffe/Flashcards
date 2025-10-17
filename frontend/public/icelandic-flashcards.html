@@ -1205,8 +1205,6 @@
       renderCard(card) {
         if (this.config.mode === 'mcq' || card.type === 'mcq') {
           return this.renderMCQ(card);
-        } else if (this.config.mode === 'learn') {
-          return this.renderLearnMode(card);
         } else {
           return this.renderFlashcard(card);
         }
