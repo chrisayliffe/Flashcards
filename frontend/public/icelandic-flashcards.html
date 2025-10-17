@@ -1048,7 +1048,7 @@
 
       // ==================== MODE SWITCHING ====================
       setMode(mode) {
-        if (['flashcards', 'mcq', 'learn'].includes(mode)) {
+        if (['flashcards', 'mcq'].includes(mode)) {
           this.config.mode = mode;
           this.currentIndex = 0;
           this.isFlipped = false;
