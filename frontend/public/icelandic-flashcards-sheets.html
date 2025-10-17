@@ -662,6 +662,14 @@
   </div>
 
   <script>
+    // ==================== GOOGLE SHEETS CONFIGURATION ====================
+    const GOOGLE_SHEETS_CONFIG = {
+      enabled: true,  // Set to false to use hardcoded cards
+      spreadsheetId: '1meQLVv9Un4CvIYWwq5lFZZx1wvnp0APh_m8dAyl0rGk',
+      defaultSheet: 'Lesson 1',  // Default tab name
+      cacheTimeout: 300000  // Cache for 5 minutes (in milliseconds)
+    };
+
     // ==================== CONFIGURATION & DATA ====================
     const CONFIG = {
       lessonId: "icelandic-basics-01",
