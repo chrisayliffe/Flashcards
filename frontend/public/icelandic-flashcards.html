@@ -966,6 +966,46 @@
         }, 100);
       }
 
+      checkFillBlank() {
+        if (this.mcqAnswered) return;
+        
+        const card = this.cards[this.currentIndex];
+        const input = document.getElementById('fill-blank-input');
+        
+        if (!input) return;
+        
+        const userAnswer = input.value.trim();
+        
+        if (!userAnswer) {
+          this.showToast('Please enter an answer');
+          return;
+        }
+        
+        const acceptableAnswers = card.acceptableAnswers || [card.answer];
+        const isCorrect = acceptableAnswers.some(ans => 
+          ans.toLowerCase() === userAnswer.toLowerCase()
+        );
+        
+        this.mcqAnswered = true;
+        this.mcqSelectedIndex = isCorrect;
+        
+        if (isCorrect) {
+          this.mastered.add(card.id);
+          this.showToast('Correct! 🎉');
+        } else {
+          this.toReview.add(card.id);
+          this.showToast('Not quite. Try reviewing this one.');
+        }
+        
+        this.saveProgress();
+        this.render();
+        this.emitEvent('fillBlankAnswer', {
+          cardId: card.id,
+          answer: userAnswer,
+          correct: isCorrect
+        });
+      }
+
       // ==================== LEARN MODE ====================
       markKnown() {
         const card = this.cards[this.currentIndex];
