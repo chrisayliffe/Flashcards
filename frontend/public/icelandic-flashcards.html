@@ -1237,23 +1237,20 @@
                  aria-label="Flashcard. Press space or enter to flip">
               
               <div class="lwfc-card-face lwfc-card-front">
-                <span class="lwfc-card-label">English</span>
-                ${card.back.image ? `<img src="${card.back.image}" alt="English image" class="lwfc-card-image">` : ''}
+                ${card.back.image ? `<img src="${card.back.image}" alt="Front image" class="lwfc-card-image">` : ''}
                 <div class="lwfc-card-text">${card.back.text}</div>
               </div>
               
               <div class="lwfc-card-face lwfc-card-back">
-                <span class="lwfc-card-label">Icelandic</span>
-                ${card.audioMp4 ? `
-                  <button class="lwfc-speaker-icon ${this.isAudioPlaying && this.currentAudioCardId === card.id ? 'playing' : ''}" 
-                          onclick="event.stopPropagation(); window.LWFlashcards.playAudio('${card.audioMp4}', '${card.id}')"
-                          onkeydown="if(event.key==='Enter'){event.stopPropagation(); window.LWFlashcards.playAudio('${card.audioMp4}', '${card.id}');}"
-                          tabindex="0"
-                          data-tooltip="Play pronunciation"
-                          aria-label="Play pronunciation">
-                    🔊
-                  </button>
-                ` : ''}
+                <span class="lwfc-card-label">Íslensku</span>
+                <button class="lwfc-speaker-icon ${this.isAudioPlaying && this.currentAudioCardId === card.id ? 'playing' : ''}" 
+                        onclick="event.stopPropagation(); window.LWFlashcards.playAudio('${card.audioMp4 || ''}', '${card.id}')"
+                        onkeydown="if(event.key==='Enter'){event.stopPropagation(); window.LWFlashcards.playAudio('${card.audioMp4 || ''}', '${card.id}');}"
+                        tabindex="0"
+                        data-tooltip="Play pronunciation"
+                        aria-label="Play pronunciation">
+                  🔊
+                </button>
                 ${card.front.image ? `<img src="${card.front.image}" alt="Icelandic image" class="lwfc-card-image">` : ''}
                 <div class="lwfc-card-text">${card.front.text}</div>
               </div>
