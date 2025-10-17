@@ -217,10 +217,39 @@
 
     .lwfc-card-front {
       transform: rotateY(0deg);
+      transition: background-color var(--lwfc-transition), color var(--lwfc-transition);
     }
 
     .lwfc-card-back {
       transform: rotateY(180deg);
+      transition: background-color var(--lwfc-transition), color var(--lwfc-transition);
+    }
+
+    /* Hover states for flashcards */
+    .lwfc-card:not(.flipped):hover .lwfc-card-front {
+      background: #21b767;
+      color: #ffffff;
+    }
+
+    .lwfc-card:not(.flipped):hover .lwfc-card-front .lwfc-card-text {
+      color: #ffffff;
+    }
+
+    .lwfc-card:not(.flipped):hover .lwfc-card-front .lwfc-card-label {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .lwfc-card.flipped:hover .lwfc-card-back {
+      background: #f15d4e;
+      color: #ffffff;
+    }
+
+    .lwfc-card.flipped:hover .lwfc-card-back .lwfc-card-text {
+      color: #ffffff;
+    }
+
+    .lwfc-card.flipped:hover .lwfc-card-back .lwfc-card-label {
+      color: rgba(255, 255, 255, 0.8);
     }
 
     .lwfc-card-label {
