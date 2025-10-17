@@ -1063,6 +1063,7 @@
       setMode(mode) {
         if (['flashcards', 'mcq'].includes(mode)) {
           this.config.mode = mode;
+          this.cards = this.filterCardsByMode(this.allCards, mode); // Re-filter cards
           this.currentIndex = 0;
           this.isFlipped = false;
           this.hintVisible = false;
